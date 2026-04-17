@@ -11,33 +11,32 @@ st.markdown("""
     body { background-color: #060d14; }
     div[data-baseweb="select"] { 
         background-color: #0f172a !important; 
-        border: 1px solid #22c55e !important;
+        border: 2px solid #22c55e !important;
         color: white !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. Re-Mapped 50+ Markets with Direct Exchange Feeds
-# Maine symbols change kiye hain jo Quotex ke Real Market se match karein
-market_sync = {
-    "EUR/USD": "ICE:EURUSD",
-    "GBP/USD": "ICE:GBPUSD",
-    "USD/JPY": "ICE:USDJPY",
+# 2. Standard Global Symbols (Error-Free)
+market_data = {
+    "EUR/USD": "FX:EURUSD",
+    "GBP/USD": "FX:GBPUSD",
+    "USD/JPY": "FX:USDJPY",
     "USD/BRL": "FX_IDC:USDBRL",
     "USD/INR": "FX_IDC:USDINR",
     "USD/BDT": "FX_IDC:USDBDT",
-    "USD/PKR": "FX_IDC:USDPKR",
-    "GOLD": "SAXO:XAUUSD",
+    "USD/ARS": "FX_IDC:USDARS",
+    "GOLD (XAU/USD)": "OANDA:XAUUSD",
     "BITCOIN": "BINANCE:BTCUSDT",
-    "ETH": "BINANCE:ETHUSDT",
-    "AUD/USD": "ICE:AUDUSD",
-    "USD/CAD": "ICE:USDCAD"
+    "ETH/USDT": "BINANCE:ETHUSDT",
+    "AUD/USD": "FX:AUDUSD",
+    "USD/CAD": "FX:USDCAD"
 }
 
-selected_name = st.selectbox("Market Pair Selector", list(market_sync.keys()))
-symbol = market_sync[selected_name]
+selected_name = st.selectbox("Market Pair Selector", list(market_data.keys()))
+symbol = market_data[selected_name]
 
-# 3. Enhanced Real-Time Widget
+# 3. Enhanced Dashboard
 components.html(f"""
     <style>
     body {{ background-color: #060d14; color: white; font-family: sans-serif; margin: 0; overflow: hidden; }}
@@ -48,7 +47,7 @@ components.html(f"""
     </style>
 
     <div class="top-bar">
-        <div style="color:#22c55e; font-weight:bold;">● SYNCED LIVE: {selected_name}</div>
+        <div style="color:#22c55e; font-weight:bold;">● LIVE SYNC ACTIVE: {selected_name}</div>
         <div id="clock" style="font-family:monospace; font-size:18px;">00:00:00</div>
     </div>
 
@@ -81,19 +80,13 @@ components.html(f"""
       "locale": "en",
       "enable_publishing": false,
       "hide_top_toolbar": true,
-      "withdateranges": false,
-      "save_image": false,
-      "container_id": "chart_div",
-      "studies": [
-        "RSI@tv-basicstudies",
-        "MASimple@tv-basicstudies"
-      ]
+      "container_id": "chart_div"
     }});
 
     setInterval(function() {{
-        var pkTime = new Date();
-        document.getElementById('clock').innerHTML = pkTime.toLocaleTimeString();
-        var sec = pkTime.getSeconds();
+        var now = new Date();
+        document.getElementById('clock').innerHTML = now.toLocaleTimeString();
+        var sec = now.getSeconds();
         var left = 60 - sec;
         document.getElementById('timer').innerHTML = "00:" + (left < 10 ? '0' + left : left);
 
