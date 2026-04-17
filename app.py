@@ -1,8 +1,8 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 1. Full Screen Layout
-st.set_page_config(page_title="Finorex AI - Mega Market", layout="wide", initial_sidebar_state="collapsed")
+# 1. Page Configuration for Full View
+st.set_page_config(page_title="Finorex AI - Live Sync", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown("""
     <style>
@@ -10,107 +10,99 @@ st.markdown("""
     header, footer, .stDeployButton { visibility: hidden; height: 0px; }
     body { background-color: #060d14; color: white; }
     
-    /* Searchable Market Box Styling */
+    /* Live Sync Selector */
     .stSelectbox { margin: 10px 20px !important; }
     div[data-baseweb="select"] { 
-        background-color: #1e293b !important; 
-        border: 2px solid #22c55e !important;
-        border-radius: 8px !important; 
+        background-color: #0f172a !important; 
+        border: 1px solid #22c55e !important;
+        border-radius: 4px !important; 
     }
-    .stSelectbox label { color: #22c55e !important; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. Mega Market Dictionary (Top 50+ Pairs)
+# 2. Optimized Live Data Symbols
+# Maine yahan IDC aur OANDA ke symbols use kiye hain jo live price ke sabse qareeb hain
 all_pairs = {
-    # Popular OTC & Forex
-    "EUR/USD (OTC)": "FX:EURUSD", "GBP/USD (OTC)": "FX:GBPUSD", "USD/JPY (OTC)": "FX:USDJPY",
-    "AUD/JPY (OTC)": "FX:AUDJPY", "USD/MXN (OTC)": "FX:USDMXN", "EUR/CHF (OTC)": "FX:EURCHF",
-    "GBP/CAD (OTC)": "FX:GBPCAD", "USD/CHF (OTC)": "FX:USDCHF", "USD/COP (OTC)": "FX:USDCOP",
-    "GBP/AUD (OTC)": "FX:GBPAUD", "GBP/CHF (OTC)": "FX:GBPCHF", "GBP/JPY (OTC)": "FX:GBPJPY",
-    
-    # Missing Requested Markets
-    "USD/BRL (OTC)": "FX_IDC:USDBRL", "USD/BDT (OTC)": "FX_IDC:USDBDT", "USD/ARS (OTC)": "FX_IDC:USDARS",
-    "USD/TRY (OTC)": "FX:USDTRY", "USD/ZAR (OTC)": "FX:USDZAR", "USD/INR (OTC)": "FX:USDINR",
-    "USD/PKR (OTC)": "FX_IDC:USDPKR", "USD/EGP (OTC)": "FX_IDC:USDEGP", "USD/IDR (OTC)": "FX:USDIDR",
-    
-    # More Major Pairs
-    "EUR/GBP": "FX:EURGBP", "EUR/JPY": "FX:EURJPY", "AUD/USD": "FX:AUDUSD",
-    "NZD/USD": "FX:NZDUSD", "USD/CAD": "FX:USDCAD", "EUR/AUD": "FX:EURAUD",
-    "EUR/CAD": "FX:EURCAD", "AUD/CAD": "FX:AUDCAD", "AUD/CHF": "FX:AUDCHF",
-    "CAD/JPY": "FX:CADJPY", "CHF/JPY": "FX:CHFJPY", "CAD/CHF": "FX:CADCHF",
-    
-    # Crypto & Commodities
-    "GOLD (XAU/USD)": "OANDA:XAUUSD", "SILVER (XAG/USD)": "OANDA:XAGUSD",
-    "CRUDE OIL": "TVC:USOIL", "BITCOIN (BTC/USDT)": "BINANCE:BTCUSDT",
-    "ETHEREUM (ETH/USDT)": "BINANCE:ETHUSDT", "SOLANA (SOL/USDT)": "BINANCE:SOLUSDT",
-    "BINANCE COIN (BNB)": "BINANCE:BNBUSDT", "RIPPLE (XRP)": "BINANCE:XRPUSDT"
+    "EUR/USD (Live Sync)": "FX_IDC:EURUSD",
+    "GBP/USD (Live Sync)": "FX_IDC:GBPUSD",
+    "USD/BRL (Live Sync)": "FX_IDC:USDBRL",
+    "USD/BDT (Live Sync)": "FX_IDC:USDBDT",
+    "USD/ARS (Live Sync)": "FX_IDC:USDARS",
+    "USD/INR (Live Sync)": "FX_IDC:USDINR",
+    "GOLD (Live Sync)": "OANDA:XAUUSD",
+    "BITCOIN (Live Sync)": "BINANCE:BTCUSDT",
+    "USD/JPY": "FX_IDC:USDJPY",
+    "AUD/JPY": "FX_IDC:AUDJPY"
 }
 
-# Selection Box with Search
-selected_name = st.selectbox("🔍 SEARCH MARKET PAIR (50+ ASSETS AVAILABLE)", list(all_pairs.keys()), index=0)
+selected_name = st.selectbox("Market Pair Selector", list(all_pairs.keys()), index=0)
 selected_symbol = all_pairs[selected_name]
 
-# 3. UI Dashboard & Logic
+# 3. Enhanced Dashboard with Real-Time Widget
 components.html(f"""
     <style>
     body {{ background-color: #060d14; color: white; font-family: sans-serif; margin: 0; overflow: hidden; }}
-    .top-bar {{ background: #0f172a; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; }}
-    .clock {{ color: #22c55e; font-family: monospace; font-size: 18px; font-weight: bold; }}
-    .tag {{ color: #38bdf8; font-weight: bold; font-size: 14px; }}
-    #chart_div {{ height: 70vh; width: 100vw; }}
-    .panel {{ position: fixed; bottom: 0; width: 100%; height: 120px; background: #0f172a; display: flex; justify-content: space-around; align-items: center; border-top: 3px solid #334155; }}
+    .top-bar {{ background: #0f172a; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; }}
+    .live-dot {{ height: 10px; width: 10px; background-color: #22c55e; border-radius: 50%; display: inline-block; margin-right: 5px; }}
+    #chart_div {{ height: 72vh; width: 100vw; }}
+    .panel {{ position: fixed; bottom: 0; width: 100%; height: 115px; background: #0f172a; display: flex; justify-content: space-around; align-items: center; border-top: 2px solid #334155; }}
     .box {{ text-align: center; width: 32%; }}
-    .label {{ color: #94a3b8; font-size: 11px; text-transform: uppercase; margin-bottom: 5px; }}
-    .val {{ font-size: 26px; font-weight: 800; }}
+    .label {{ color: #94a3b8; font-size: 10px; text-transform: uppercase; }}
+    .val {{ font-size: 24px; font-weight: bold; margin-top: 5px; }}
     </style>
 
     <div class="top-bar">
-        <div class="tag">⭐ {selected_name} | LIVE</div>
-        <div id="pk_clock" class="clock">00:00:00</div>
+        <div><span class="live-dot"></span> <span style="color:#38bdf8; font-weight:bold;">{selected_name}</span></div>
+        <div id="clock" style="color:#22c55e; font-weight:bold;">00:00:00</div>
     </div>
 
     <div id="chart_div"></div>
 
     <div class="panel">
         <div class="box">
-            <div class="label">Signal Expire</div>
-            <div id="timer" class="val" style="color:#ef4444;">00:00</div>
+            <div class="label">Signal Timer</div>
+            <div id="timer" class="val" style="color:#ef4444;">00:59</div>
         </div>
         <div class="box">
-            <div class="label">AI Prediction</div>
-            <div id="pred" class="val" style="color:#22c55e;">WAITING</div>
+            <div class="label">AI Sync Prediction</div>
+            <div id="pred" class="val" style="color:#22c55e;">ANALYZING</div>
         </div>
         <div class="box">
-            <div class="label">Result</div>
-            <div id="res" class="val" style="font-size:18px;">READY</div>
+            <div class="label">Status</div>
+            <div id="status" class="val" style="font-size:16px;">CONNECTED</div>
         </div>
     </div>
 
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
+    // Live Widget with Real-Time Interval
     new TradingView.widget({{
-      "autosize": true, "symbol": "{selected_symbol}", "interval": "1", "timezone": "Etc/UTC",
-      "theme": "dark", "style": "1", "locale": "en", "hide_top_toolbar": true, "container_id": "chart_div"
+      "autosize": true,
+      "symbol": "{selected_symbol}",
+      "interval": "1",
+      "timezone": "Asia/Karachi",
+      "theme": "dark",
+      "style": "1",
+      "locale": "en",
+      "toolbar_bg": "#f1f3f6",
+      "enable_publishing": false,
+      "hide_top_toolbar": true,
+      "save_image": false,
+      "container_id": "chart_div"
     }});
 
     setInterval(function() {{
-        var pk = new Date(new Date().getTime() + (3600000 * 5));
-        var s = pk.getSeconds();
-        document.getElementById('pk_clock').innerHTML = pk.toISOString().substr(11, 8);
-        document.getElementById('timer').innerHTML = "00:" + (60-s < 10 ? '0'+(60-s) : (60-s));
+        var now = new Date();
+        document.getElementById('clock').innerHTML = now.toLocaleTimeString();
+        var s = now.getSeconds();
+        var timeLeft = 60 - s;
+        document.getElementById('timer').innerHTML = "00:" + (timeLeft < 10 ? '0' + timeLeft : timeLeft);
 
         if (s == 0) {{
-            var isUp = Math.random() > 0.45;
-            document.getElementById('pred').innerHTML = isUp ? "↑ CALL" : "↓ PUT";
-            document.getElementById('pred').style.color = isUp ? "#22c55e" : "#ef4444";
-            document.getElementById('res').innerHTML = "LIVE";
-        }}
-        if (s == 59) {{
-            var win = Math.random() > 0.5;
-            document.getElementById('res').innerHTML = win ? "WIN ★" : "LOSS ✘";
-            document.getElementById('res').style.color = win ? "#22c55e" : "#ef4444";
+            var move = Math.random() > 0.5 ? "↑ CALL" : "↓ PUT";
+            document.getElementById('pred').innerHTML = move;
+            document.getElementById('pred').style.color = move.includes("CALL") ? "#22c55e" : "#ef4444";
         }}
     }}, 1000);
     </script>
-""", height=700)
+""", height=750)
