@@ -1,65 +1,58 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# --- FULL SCREEN CONFIG ---
+# --- 1. PAGE CONFIG (NO PADDING) ---
 st.set_page_config(
-    page_title="Aashique Pro AI - Ultra Live",
+    page_title="Aashique Pro AI",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for Full Screen and Dark Theme
+# --- 2. ADVANCED CSS FOR FULL SCREEN ---
 st.markdown("""
     <style>
-    /* Faaltu margins hatane ke liye */
+    /* Sab margins aur padding khatam karne ke liye */
     .block-container {
-        padding-top: 0rem;
-        padding-bottom: 0rem;
-        padding-left: 0rem;
-        padding-right: 0rem;
+        padding: 0px !important;
+        margin: 0px !important;
+        max-width: 100% !important;
     }
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
-    
-    .main { background-color: #060d14; }
-    
-    /* Signal Box Styling */
-    .signal-container {
-        background: rgba(30, 41, 59, 0.7);
-        backdrop-filter: blur(10px);
-        border: 1px solid #334155;
-        border-radius: 10px;
-        padding: 15px;
-        margin: 10px;
-        text-align: center;
-        color: white;
+    iframe {
+        border-radius: 0px !important;
     }
-    .call-btn { color: #00e676; font-size: 30px; font-weight: bold; }
-    .put-btn { color: #ff1744; font-size: 30px; font-weight: bold; }
+    /* Streamlit ke default menu aur footer ko hide karne ke liye */
+    header, footer, .stDeployButton {
+        visibility: hidden;
+        height: 0px;
+    }
+    /* Mobile par scroll bar khatam karne ke liye */
+    body {
+        overflow: hidden;
+        background-color: #060d14;
+    }
+    #MainMenu {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR FOR ASSET SELECTION ---
-st.sidebar.title("💎 ASSETS")
-market_choice = st.sidebar.selectbox(
-    "CHOOSE MARKET", 
-    ["FX:EURUSD", "FX:GBPUSD", "FX:USDJPY", "BITSTAMP:BTCUSD", "OANDA:XAUUSD"],
+# --- 3. MARKET SELECTION (SIDEBAR) ---
+# Swipe karke ya top arrow se market change kar sakte hain
+market = st.sidebar.selectbox(
+    "CHOOSE ASSET", 
+    ["FX:EURUSD", "FX:GBPUSD", "FX:USDJPY", "BITSTAMP:BTCUSD"],
     index=0
 )
 
-# --- UI LAYOUT (SIDE BY SIDE) ---
-col_chart, col_signal = st.columns([4, 1])
-
-with col_chart:
-    # TradingView Advanced Chart (Full Height)
+# --- 4. TRADINGVIEW FULL SCREEN WIDGET ---
+# Height ko '100vh' (View Height) par set kiya hai taake mobile screen par fit ho
+def tradingview_full_app(symbol):
     components.html(f"""
-        <div class="tradingview-widget-container" style="height:95vh; width:100%;">
-          <div id="tradingview_pro"></div>
+        <div class="tradingview-widget-container" style="height:100vh; width:100vw; margin:0; padding:0;">
+          <div id="tv_chart" style="height:100%; width:100%;"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
           <script type="text/javascript">
           new TradingView.widget({{
             "autosize": true,
-            "symbol": "{market_choice}",
+            "symbol": "{symbol}",
             "interval": "1",
             "timezone": "Etc/UTC",
             "theme": "dark",
@@ -67,35 +60,14 @@ with col_chart:
             "locale": "en",
             "toolbar_bg": "#111",
             "enable_publishing": false,
-            "withdateranges": true,
-            "hide_side_toolbar": false,
-            "allow_symbol_change": true,
-            "details": true,
-            "hotlist": true,
-            "calendar": true,
-            "container_id": "tradingview_pro"
+            "hide_top_toolbar": false,
+            "hide_legend": false,
+            "save_image": false,
+            "container_id": "tv_chart"
           }});
           </script>
         </div>
-    """, height=850)
+    """, height=1000) # Desktop height, mobile par ye auto set ho jayega
 
-with col_signal:
-    st.markdown('<br><br>', unsafe_allow_html=True)
-    
-    # Live Signal Box
-    st.markdown("""
-        <div class="signal-container">
-            <p style="font-size: 14px; color: #94a3b8;">PRO AI PREDICTION</p>
-            <h2 class="call-btn">BUY / CALL</h2>
-            <p style="font-size: 20px;">96% ACCURACY</p>
-            <hr style="border: 0.5px solid #334155;">
-            <p style="font-size: 12px; color: #94a3b8;">NEXT CANDLE TARGET</p>
-            <h3 style="color: white;">M1 DURATION</h3>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    # Additional Tools
-    st.button("🔄 REFRESH AI")
-    st.button("📊 ANALYSIS")
-    
-    st.info("Signals are synced with Live TradingView Data.")
+# UI Render
+tradingview_full_app(market)
