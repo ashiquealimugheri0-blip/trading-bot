@@ -1,83 +1,88 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# --- 1. PAGE CONFIG ---
-st.set_page_config(
-    page_title="Aashique Pro AI - Fixed",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+# --- 1. APP CONFIG (NO PADDING / NO SCROLL) ---
+st.set_page_config(page_title="Aashique Pro AI", layout="wide", initial_sidebar_state="collapsed")
 
-# --- 2. CSS FOR LOCKING SCREEN & HIDING BARS ---
 st.markdown("""
     <style>
-    /* Sab margins aur padding khatam */
-    .block-container {
-        padding: 0px !important;
-        margin: 0px !important;
-        max-width: 100% !important;
-        height: 100vh !important;
-        overflow: hidden !important;
+    /* Full Screen Fix */
+    .block-container { padding: 0px !important; margin: 0px !important; }
+    header, footer, .stDeployButton { visibility: hidden; height: 0px; }
+    body { overflow: hidden; background-color: #060d14; }
+
+    /* Top Navigation Bar Style */
+    .top-nav {
+        background: #131722;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        padding-left: 15px;
+        border-bottom: 1px solid #2a2e39;
+        color: white;
+        font-weight: bold;
     }
-    header, footer, .stDeployButton {
-        visibility: hidden;
-        height: 0px;
-    }
-    /* Chart Container ko lock karna */
-    .chart-wrapper {
-        position: relative;
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-        background-color: #060d14;
-    }
-    /* Transparent Layer jo dragging ko rokegi */
-    /* Agar aapko chart zoom karna ho, toh niche wali 'overlay' class ko comment kar dein */
-    .overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
+
+    /* Bottom Signal Bar Style */
+    .bottom-bar {
+        position: fixed;
+        bottom: 0;
         width: 100%;
-        height: 100%;
-        z-index: 10;
-        background: rgba(0,0,0,0); /* Bilkul transparent */
+        height: 100px;
+        background: #131722;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-top: 1px solid #2a2e39;
+        z-index: 100;
     }
-    iframe {
-        height: 100vh !important;
-        width: 100vw !important;
-        border: none !important;
-    }
+    .signal-text { color: #00ff88; font-size: 24px; font-weight: bold; margin: 0; }
+    .timer { color: #ff3333; font-size: 18px; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. FIXED TRADINGVIEW WIDGET ---
-def fixed_tradingview_app(symbol):
-    # Overlay div dragging ko block karegi
-    components.html(f"""
-        <div style="position: relative; height: 100vh; width: 100vw; overflow: hidden;">
-            <div id="tv_fixed_chart" style="height: 100%; width: 100%;"></div>
-            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-            <script type="text/javascript">
-            new TradingView.widget({{
-                "autosize": true,
-                "symbol": "{symbol}",
-                "interval": "1",
-                "timezone": "Etc/UTC",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "toolbar_bg": "#111",
-                "enable_publishing": false,
-                "hide_top_toolbar": true,      /* Top bar hide kar di taake clean lage */
-                "hide_legend": true,
-                "save_image": false,
-                "container_id": "tv_fixed_chart",
-                "lock_assets": true           /* Assets ko lock karne ki koshish */
-            }});
-            </script>
-        </div>
-    """, height=1000)
+# --- 2. TOP NAV BAR ---
+st.markdown('<div class="top-nav">💎 EURUSD (OTC) | LIVE ACCOUNT </div>', unsafe_allow_html=True)
 
-# Render Chart
-# Aap apna preferred asset yahan likh sakte hain
-fixed_tradingview_app("FX:EURUSD")
+# --- 3. FIT-SCREEN CHART ---
+# Maine height ko 70% kiya hai taake niche signal bar ki jagah bane
+components.html("""
+    <div id="chart_container" style="height:70vh; width:100vw;"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+    new TradingView.widget({
+      "container_id": "chart_container",
+      "autosize": true,
+      "symbol": "FX:EURUSD",
+      "interval": "1",
+      "timezone": "Etc/UTC",
+      "theme": "dark",
+      "style": "1",
+      "locale": "en",
+      "toolbar_bg": "#f1f3f6",
+      "enable_publishing": false,
+      "hide_top_toolbar": true,
+      "save_image": false,
+      "hide_side_toolbar": true,
+      "allow_symbol_change": false
+    });
+    </script>
+""", height=550)
+
+# --- 4. BOTTOM SIGNAL BAR (Finorex Style) ---
+st.markdown("""
+    <div class="bottom-bar">
+        <div>
+            <p style="margin:0; color: #94a3b8; font-size: 12px;">NEXT SIGNAL</p>
+            <p class="signal-text">⬆ CALL</p>
+        </div>
+        <div style="text-align: center;">
+            <p style="margin:0; color: #94a3b8; font-size: 12px;">TIME LEFT</p>
+            <p class="timer">00:42</p>
+        </div>
+        <div style="text-align: right;">
+            <p style="margin:0; color: #94a3b8; font-size: 12px;">ACCURACY</p>
+            <p style="color:white; font-weight:bold; margin:0;">98.4%</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
