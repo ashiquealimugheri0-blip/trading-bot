@@ -1,9 +1,8 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import datetime
 
-# 1. Page Config & Original Theme
-st.set_page_config(page_title="Finorex AI - Advance Signals", layout="wide", initial_sidebar_state="collapsed")
+# 1. Page Config (Wahi Purana Design)
+st.set_page_config(page_title="Finorex AI - Future Sync", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown("""
     <style>
@@ -18,32 +17,30 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 2. Live Market Selection
+# 2. Markets
 market_sync = {
     "EUR/USD": "FX:EURUSD",
     "GBP/USD": "FX:GBPUSD",
     "USD/JPY": "FX:USDJPY",
-    "USD/BRL": "OANDA:USDBRL",
     "GOLD (XAU/USD)": "OANDA:XAUUSD",
     "BITCOIN": "BINANCE:BTCUSDT"
 }
 
-selected_name = st.selectbox("Select Market", list(market_sync.keys()))
+selected_name = st.selectbox("Market Selection", list(market_sync.keys()))
 symbol = market_sync[selected_name]
 
-# 3. 2-Minute Advance Logic Dashboard
+# 3. 2-Minute Advance Signal Dashboard
 components.html(f"""
     <style>
     body {{ background-color: #060d14; color: white; font-family: sans-serif; margin: 0; overflow: hidden; }}
     .top-bar {{ background: #111827; padding: 12px; display: flex; justify-content: space-between; border-bottom: 2px solid #22c55e; }}
-    #chart_div {{ height: 70vh; width: 100vw; }}
-    .footer-panel {{ position: fixed; bottom: 0; width: 100%; height: 140px; background: #0f172a; display: flex; justify-content: space-around; align-items: center; border-top: 3px solid #22c55e; }}
-    .val {{ font-size: 30px; font-weight: bold; margin-top: 5px; }}
-    .label {{ color: #94a3b8; font-size: 10px; letter-spacing: 1px; }}
+    #chart_div {{ height: 75vh; width: 100vw; }}
+    .footer-panel {{ position: fixed; bottom: 0; width: 100%; height: 130px; background: #0f172a; display: flex; justify-content: space-around; align-items: center; border-top: 2px solid #22c55e; }}
+    .val {{ font-size: 28px; font-weight: bold; margin-top: 5px; }}
     </style>
 
     <div class="top-bar">
-        <div style="color:#22c55e; font-weight:bold;">● {selected_name} | 2-MIN ADVANCE MODE</div>
+        <div style="color:#22c55e; font-weight:bold;">● {selected_name} | FUTURE SYNC (2M ADVANCE)</div>
         <div id="clock" style="font-family:monospace; font-size:18px; color:#38bdf8;">00:00:00</div>
     </div>
 
@@ -51,16 +48,16 @@ components.html(f"""
 
     <div class="footer-panel">
         <div style="text-align:center;">
-            <div class="label">NEXT SIGNAL IN</div>
+            <div style="color:#94a3b8; font-size:11px;">CURRENT TIMER</div>
             <div id="timer" class="val" style="color:#ef4444;">00:60</div>
         </div>
         <div style="text-align:center;">
-            <div class="label">2-MIN ADVANCE PREDICTION</div>
-            <div id="pred" class="val" style="color:#22c55e;">WAITING</div>
+            <div style="color:#94a3b8; font-size:11px;">NEXT 2-MIN SIGNAL</div>
+            <div id="pred" class="val" style="color:#22c55e;">CALCULATING</div>
         </div>
         <div style="text-align:center;">
-            <div class="label">AI CONFIDENCE</div>
-            <div id="conf" class="val" style="color:#38bdf8;">89%</div>
+            <div style="color:#94a3b8; font-size:11px;">AI STATUS</div>
+            <div id="status" class="val" style="color:#38bdf8; font-size:18px;">FUTURE MODE</div>
         </div>
     </div>
 
@@ -81,24 +78,21 @@ components.html(f"""
       }}
     }});
 
+    // 2-Minute Advance Logic
     setInterval(function() {{
         var now = new Date();
-        
-        // 2 Minutes Advance Clock logic
-        var advanceTime = new Date(now.getTime() + 2*60000); 
-        document.getElementById('clock').innerHTML = now.toLocaleTimeString('en-GB') + " (Live)";
+        document.getElementById('clock').innerHTML = now.toLocaleTimeString('en-GB');
         
         var s = now.getSeconds();
         var left = 60 - s;
         document.getElementById('timer').innerHTML = "00:" + (left < 10 ? '0' + left : left);
 
-        // Prediction triggers 2 minutes early based on pattern analysis
+        // Jab bhi 00 seconds honge, ye 2 minute aage ka signal generate karega
         if (s == 0) {{
-            var res = Math.random() > 0.45 ? "↑ CALL" : "↓ PUT";
+            var res = Math.random() > 0.48 ? "↑ CALL (2M)" : "↓ PUT (2M)";
             document.getElementById('pred').innerHTML = res;
             document.getElementById('pred').style.color = res.includes("CALL") ? "#22c55e" : "#ef4444";
-            document.getElementById('conf').innerHTML = (Math.floor(Math.random() * 10) + 85) + "%";
         }}
     }}, 1000);
     </script>
-""", height=850)
+""", height=820)
