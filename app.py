@@ -1,53 +1,51 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# --- 1. PAGE CONFIG (NO PADDING) ---
+# --- 1. FULL SCREEN & NO PADDING SETUP ---
 st.set_page_config(
     page_title="Aashique Pro AI",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. ADVANCED CSS FOR FULL SCREEN ---
+# Custom CSS to force fit everything
 st.markdown("""
     <style>
-    /* Sab margins aur padding khatam karne ke liye */
+    /* Sab gaps khatam karne ke liye */
     .block-container {
         padding: 0px !important;
         margin: 0px !important;
         max-width: 100% !important;
+        height: 100vh !important;
     }
-    iframe {
-        border-radius: 0px !important;
-    }
-    /* Streamlit ke default menu aur footer ko hide karne ke liye */
+    /* Streamlit ki faltu bars hide karna */
     header, footer, .stDeployButton {
         visibility: hidden;
         height: 0px;
     }
-    /* Mobile par scroll bar khatam karne ke liye */
-    body {
-        overflow: hidden;
+    /* Body background and scroll prevention */
+    body, .stApp {
         background-color: #060d14;
+        overflow: hidden !important;
     }
-    #MainMenu {visibility: hidden;}
+    iframe {
+        height: 100vh !important;
+        width: 100vw !important;
+        border: none !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. MARKET SELECTION (SIDEBAR) ---
-# Swipe karke ya top arrow se market change kar sakte hain
-market = st.sidebar.selectbox(
-    "CHOOSE ASSET", 
-    ["FX:EURUSD", "FX:GBPUSD", "FX:USDJPY", "BITSTAMP:BTCUSD"],
-    index=0
-)
+# --- 2. ASSET SELECTION ---
+# Default asset EUR/USD rakha hai
+market = "FX:EURUSD"
 
-# --- 4. TRADINGVIEW FULL SCREEN WIDGET ---
-# Height ko '100vh' (View Height) par set kiya hai taake mobile screen par fit ho
-def tradingview_full_app(symbol):
+# --- 3. TRADINGVIEW ULTRA-FIT WIDGET ---
+def tradingview_fit_screen(symbol):
+    # '100%' height aur width use ki hai taake mobile par fit ho jaye
     components.html(f"""
         <div class="tradingview-widget-container" style="height:100vh; width:100vw; margin:0; padding:0;">
-          <div id="tv_chart" style="height:100%; width:100%;"></div>
+          <div id="tv_chart_fit" style="height:100%; width:100%;"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
           <script type="text/javascript">
           new TradingView.widget({{
@@ -63,11 +61,12 @@ def tradingview_full_app(symbol):
             "hide_top_toolbar": false,
             "hide_legend": false,
             "save_image": false,
-            "container_id": "tv_chart"
+            "container_id": "tv_chart_fit",
+            "library_path": "https://s3.tradingview.com/tv.js"
           }});
           </script>
         </div>
-    """, height=1000) # Desktop height, mobile par ye auto set ho jayega
+    """, height=1200) # Yeh buffer height hai, CSS isay 100vh par lock kar degi
 
-# UI Render
-tradingview_full_app(market)
+# UI Execution
+tradingview_fit_screen(market)
