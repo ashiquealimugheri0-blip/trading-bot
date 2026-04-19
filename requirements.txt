@@ -3,3 +3,4 @@ yfinance
 pandas-ta
 requests
 plotly
+streamlit==1.31.0
